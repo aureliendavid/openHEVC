@@ -155,16 +155,15 @@ openhevc-$(OHCONFIG_OHSTATIC): openhevc-static
 openhevc-shared: libopenhevc/$(SLIBPREF)openhevc$(BUILDSUF)$(SLIBSUF) libopenhevc/libopenhevc.pc
 
 openhevc-static: libopenhevc/$(LIBPREF)openhevc$(BUILDSUF)$(LIBSUF) libavcodec/$(LIBPREF)avcodec$(BUILDSUF)$(LIBSUF) libavutil/$(LIBPREF)avutil$(BUILDSUF)$(LIBSUF)
-	$(Q)mkdir -p tmp && cp $^ tmp/
-	$(Q)cd tmp &&  $(UNAR) -x $(LIBPREF)openhevc$(BUILDSUF)$(LIBSUF)
-	$(RM) $(LIBPREF)openhevc$(BUILDSUF)$(LIBSUF)
-	$(Q)cd tmp &&  $(UNAR) -x $(LIBPREF)avcodec$(BUILDSUF)$(LIBSUF)
-	$(RM) $(LIBPREF)avcodec$(BUILDSUF)$(LIBSUF)
-	$(Q)cd tmp &&  $(UNAR) -x $(LIBPREF)avutil$(BUILDSUF)$(LIBSUF)
-	$(RM) $(LIBPREF)avutil$(BUILDSUF)$(LIBSUF)
-	$(AR) $(ARFLAGS) tmp/$(LIBPREF)openhevc$(BUILDSUF)$(LIBSUF) tmp/*.o
-	$(Q)cp -f tmp/$(LIBPREF)openhevc$(BUILDSUF)$(LIBSUF) libopenhevc/
-	$(RM) -r tmp
+	$(Q)echo "create" $(LIBPREF)openhevc$(BUILDSUF)$(LIBSUF) > tmp.mri
+	$(Q)echo "addlib" libopenhevc/$(LIBPREF)openhevc$(BUILDSUF)$(LIBSUF) >> tmp.mri
+	$(Q)echo "addlib" libavcodec/$(LIBPREF)avcodec$(BUILDSUF)$(LIBSUF) >> tmp.mri
+	$(Q)echo "addlib" libavutil/$(LIBPREF)avutil$(BUILDSUF)$(LIBSUF) >> tmp.mri
+	$(Q)echo "save">> tmp.mri
+	$(Q)echo "end">> tmp.mri
+	$(AR) -M < tmp.mri
+	$(RM) -f tmp.mri
+	$(Q)mv -f $(LIBPREF)openhevc$(BUILDSUF)$(LIBSUF) libopenhevc/
 
 openhevc-static-win: libopenhevc/$(LIBPREF)openhevc$(BUILDSUF)$(LIBSUF) libavcodec/$(LIBPREF)avcodec$(BUILDSUF)$(LIBSUF) libavutil/$(LIBPREF)avutil$(BUILDSUF)$(LIBSUF)
 	$(AR) /OUT:libopenhevc/$(LIBPREF)openhevc$(BUILDSUF).lib libopenhevc/$(LIBPREF)openhevc$(BUILDSUF)$(LIBSUF) libavcodec/$(LIBPREF)avcodec$(BUILDSUF)$(LIBSUF) libavutil/$(LIBPREF)avutil$(BUILDSUF)$(LIBSUF)
